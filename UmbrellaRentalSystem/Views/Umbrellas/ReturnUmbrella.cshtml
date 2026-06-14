@@ -1,0 +1,105 @@
+@{
+    ViewData["Title"] = "還傘";
+    var myUmbrellas = ViewBag.MyRentedUmbrellasList as List<UmbrellaRentalSystem.Models.Umbrella>;
+}
+
+<div class="container" style="margin-top: 30px;">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-dark text-white fw-bold">
+                    我的借出雨傘
+                </div>
+                <div class="card-body">
+                    @if (myUmbrellas == null || !myUmbrellas.Any())
+                    {
+                        <div class="text-center py-5">
+                            <h5 class="text-muted mb-0">目前沒有尚未歸還的雨傘。</h5>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>雨傘編號</th>
+                                        <th>贊助商</th>
+                                        <th>狀態</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in myUmbrellas)
+                                    {
+                                        bool isSelected = item.UmbrellaId == ViewBag.SelectedUmbrellaId;
+                                        <tr class="@(isSelected ? "table-warning border-warning" : "")">
+                                            <td>
+                                                <span class="badge bg-secondary">#@item.UmbrellaId</span>
+                                                @if (isSelected)
+                                                {
+                                                    <span class="badge bg-warning text-dark ms-1">已選擇</span>
+                                                }
+                                            </td>
+                                            <td>@(item.Sponsor?.SponsorName ?? "無")</td>
+                                            <td>
+                                                <span class="badge bg-danger">借出中</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-warning text-dark text-center fw-bold">
+                    <h4 class="mb-0">還傘</h4>
+                </div>
+                <div class="card-body p-4">
+                    @if (TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                    }
+
+                    @if (myUmbrellas == null || !myUmbrellas.Any())
+                    {
+                        <a asp-controller="Accounts" asp-action="UserPage" class="btn btn-outline-secondary w-100">
+                            返回借還傘頁面
+                        </a>
+                    }
+                    else
+                    {
+                        <form asp-controller="Umbrellas" asp-action="ReturnUmbrella" method="post">
+                            <div class="form-group mb-3">
+                                <label class="form-label fw-bold">1. 選擇要歸還的雨傘</label>
+                                <select name="umbrellaId" class="form-select form-control-lg" asp-items="ViewBag.RentedUmbrellas" required>
+                                    <option value="">請選擇雨傘</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label class="form-label fw-bold">2. 選擇還傘地點</label>
+                                <select name="returnLocationId" class="form-select form-control-lg" asp-items="ViewBag.Locations" required>
+                                    <option value="">請選擇還傘地點</option>
+                                </select>
+                            </div>
+
+                            <div class="d-grid gap-2 pt-2">
+                                <button type="submit" class="btn btn-warning btn-lg text-dark fw-bold shadow-sm">
+                                    確認還傘
+                                </button>
+                                <a asp-controller="Accounts" asp-action="UserPage" class="btn btn-outline-secondary">
+                                    返回借還傘頁面
+                                </a>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

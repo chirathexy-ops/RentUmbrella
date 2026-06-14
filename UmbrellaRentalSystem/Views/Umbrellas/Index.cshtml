@@ -2,18 +2,37 @@
 
 @{
     ViewData["Title"] = "雨傘管理中心";
-    // 取得當前被選中的地點 ID
     int? currentLocationId = ViewBag.CurrentLocation as int?;
     bool isManager = ViewBag.IsManager == true;
+    bool isUserLoggedIn = ViewBag.IsUserLoggedIn == true;
 }
 
 <h1 class="mb-4">☔ 雨傘借還管理系統</h1>
 
-@if (isManager)
+<div class="d-flex justify-content-between mb-3">
+    <div>
+        @if (isManager)
+        {
+            <a asp-action="Create" class="btn btn-primary">➕ 新增雨傘資料</a>
+        }
+        @if (isUserLoggedIn)
+        {
+            <a asp-action="ReturnUmbrella" class="btn btn-warning font-weight-bold text-dark">🔍 我的借傘狀態 / 歸還雨傘</a>
+        }
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
 {
-    <p>
-        <a asp-action="Create" class="btn btn-primary">➕ 新增雨傘資料</a>
-    </p>
+    <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
+        <strong>@TempData["SuccessMessage"]</strong>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm mb-4" role="alert">
+        <strong>@TempData["ErrorMessage"]</strong>
+    </div>
 }
 
 <div class="row">
@@ -23,18 +42,15 @@
                 📍 站點位置篩選
             </div>
             <div class="list-group list-group-flush">
-                <a asp-action="Index"
-                   asp-route-locationId=""
+                <a asp-action="Index" asp-route-locationId=""
                    class="list-group-item list-group-item-action @(currentLocationId == null ? "active font-weight-bold" : "")">
                     🌐 顯示所有站點
                 </a>
-
                 @if (ViewBag.Locations != null)
                 {
                     foreach (var loc in ViewBag.Locations)
                     {
-                        <a asp-action="Index"
-                           asp-route-locationId="@loc.LocationId"
+                        <a asp-action="Index" asp-route-locationId="@loc.LocationId"
                            class="list-group-item list-group-item-action @(currentLocationId == loc.LocationId ? "active font-weight-bold" : "")">
                             🏢 @loc.LocationName
                         </a>
@@ -54,9 +70,9 @@
                             <th>目前狀態</th>
                             <th>所在站點位置</th>
                             <th>贊助商名稱</th>
-                            @if (isManager)
+                            @if (isManager || isUserLoggedIn)
                             {
-                                <th class="text-center">後台操作</th>
+                                <th class="text-center">操作項目</th>
                             }
                         </tr>
                     </thead>
@@ -64,7 +80,7 @@
                         @if (!Model.Any())
                         {
                             <tr>
-                                <td colspan="@(isManager ? 5 : 4)" class="text-center text-muted py-4">
+                                <td colspan="@(isManager || isUserLoggedIn ? 5 : 4)" class="text-center text-muted py-4">
                                     ❌ 該站點目前沒有任何雨傘資料。
                                 </td>
                             </tr>
@@ -77,40 +93,52 @@
                                     <td class="font-weight-bold text-secondary" style="vertical-align: middle;">
                                         # @item.UmbrellaId
                                     </td>
-
                                     <td style="vertical-align: middle;">
                                         @if (item.Status == "Available")
                                         {
-                                            <strong class="text-dark">在庫 (Available)</strong>
+                                            <span class="badge bg-success text-white px-2 py-1">在庫 (Available)</span>
                                         }
                                         else if (item.Status == "Rented")
                                         {
-                                            <strong class="text-dark">已借出 (Rented)</strong>
+                                            <span class="badge bg-secondary text-white px-2 py-1">已借出 (Rented)</span>
                                         }
                                         else if (item.Status == "Lost")
                                         {
-                                            <strong class="text-dark">遺失 (Lost)</strong>
-                                        }
-                                        else
-                                        {
-                                            <strong class="text-dark">@item.Status</strong>
+                                            <span class="badge bg-danger text-white px-2 py-1">遺失 (Lost)</span>
                                         }
                                     </td>
-
                                     <td class="text-info font-weight-bold" style="vertical-align: middle;">
-                                        @(item.Location != null ? item.Location.LocationName : "⚠️ 未設置地點")
+                                        @(item.Location != null ? item.Location.LocationName : "⚠️ 已被借出外在")
                                     </td>
-
                                     <td class="text-dark font-weight-bold" style="vertical-align: middle;">
                                         @(item.Sponsor != null ? item.Sponsor.SponsorName : "無")
                                     </td>
 
-                                    @if (isManager)
+                                    @if (isManager || isUserLoggedIn)
                                     {
                                         <td class="text-center" style="vertical-align: middle;">
-                                            <a asp-action="Edit" asp-route-id="@item.UmbrellaId" class="btn btn-sm btn-outline-primary">編輯</a> |
-                                            <a asp-action="Details" asp-route-id="@item.UmbrellaId" class="btn btn-sm btn-outline-info">詳情</a> |
-                                            <a asp-action="Delete" asp-route-id="@item.UmbrellaId" class="btn btn-sm btn-outline-danger">刪除</a>
+                                            @if (isManager)
+                                            {
+                                                <a asp-action="Edit" asp-route-id="@item.UmbrellaId" class="btn btn-sm btn-outline-primary">編輯</a> <span>|</span>
+                                                <a asp-action="Details" asp-route-id="@item.UmbrellaId" class="btn btn-sm btn-outline-info">詳情</a> <span>|</span>
+                                                <a asp-action="Delete" asp-route-id="@item.UmbrellaId" class="btn btn-sm btn-outline-danger">刪除</a>
+                                            }
+                                            else if (isUserLoggedIn)
+                                            {
+                                                @if (item.Status == "Available")
+                                                {
+                                                    <form asp-action="RentUmbrella" method="post" style="display:inline;">
+                                                        <input type="hidden" name="umbrellaId" value="@item.UmbrellaId" />
+                                                        <button type="submit" class="btn btn-sm btn-success font-weight-bold px-3">
+                                                            🔘 立即借傘
+                                                        </button>
+                                                    </form>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted small">借出中</span>
+                                                }
+                                            }
                                         </td>
                                     }
                                 </tr>

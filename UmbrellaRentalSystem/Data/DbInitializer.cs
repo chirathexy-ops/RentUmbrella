@@ -1,19 +1,15 @@
-﻿using UmbrellaRentalSystem.Data;
+using Microsoft.EntityFrameworkCore;
 using UmbrellaRentalSystem.Models;
-using System.Linq;
 
 namespace UmbrellaRentalSystem.Data
 {
-    // 必須要有這一行 class 定義，否則會報 CS0116 錯誤
     public static class DbInitializer
     {
         public static void Initialize(ApplicationDbContext context)
         {
-            // 確保資料庫已根據目前的 Model 建立
             context.Database.EnsureCreated();
+            EnsureTransactionTables(context);
 
-            // 1. 塞入贊助商：對應新的 Sponsor_Name
-            // 注意：因為 Sponsor_ID 是 IDENTITY(1,1)，所以這裡絕對不能寫 Id = ...
             if (!context.Sponsors.Any())
             {
                 context.Sponsors.AddRange(
@@ -23,8 +19,38 @@ namespace UmbrellaRentalSystem.Data
                 );
                 context.SaveChanges();
             }
+        }
 
-           
+        private static void EnsureTransactionTables(ApplicationDbContext context)
+        {
+            context.Database.ExecuteSqlRaw(@"
+IF OBJECT_ID(N'[Transactions]', N'U') IS NULL
+BEGIN
+    CREATE TABLE [Transactions] (
+        [Transaction_ID] int NOT NULL IDENTITY,
+        [Account_ID] int NOT NULL,
+        [Umbrella_ID] nvarchar(450) NOT NULL,
+        [LendDate] datetime2 NOT NULL,
+        [ReturnDate] datetime2 NULL,
+        [LendLocation_ID] int NOT NULL,
+        [ReturnLocation_ID] int NULL,
+        [Status] nvarchar(max) NOT NULL,
+        CONSTRAINT [PK_Transactions] PRIMARY KEY ([Transaction_ID])
+    );
+END");
+
+            context.Database.ExecuteSqlRaw(@"
+IF OBJECT_ID(N'[LostReports]', N'U') IS NULL
+BEGIN
+    CREATE TABLE [LostReports] (
+        [Report_ID] int NOT NULL IDENTITY,
+        [Transaction_ID] int NOT NULL,
+        [Report_Date] datetime2 NOT NULL,
+        [Description] nvarchar(max) NULL,
+        [IsProcessed] bit NOT NULL,
+        CONSTRAINT [PK_LostReports] PRIMARY KEY ([Report_ID])
+    );
+END");
         }
     }
 }

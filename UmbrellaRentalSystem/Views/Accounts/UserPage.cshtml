@@ -17,7 +17,7 @@
                 <div class="card shadow-sm h-100">
                     <div class="card-body">
                         <h5 class="card-title">借傘</h5>
-                        <p class="card-text">選擇站點與雨傘後進行借出。</p>
+                        <p class="card-text">查看目前可借用的雨傘，並選擇雨傘借出。</p>
                         <a asp-controller="Umbrellas" asp-action="Index" class="btn btn-info text-white">查看可借雨傘</a>
                     </div>
                 </div>
@@ -27,8 +27,8 @@
                 <div class="card shadow-sm h-100">
                     <div class="card-body">
                         <h5 class="card-title">還傘</h5>
-                        <p class="card-text">後續可接上還傘流程與交易紀錄。</p>
-                        <button class="btn btn-secondary" disabled>還傘功能待建立</button>
+                        <p class="card-text">選擇要歸還的雨傘與還傘地點。</p>
+                        <a asp-controller="Umbrellas" asp-action="ReturnUmbrella" class="btn btn-warning text-dark">前往還傘</a>
                     </div>
                 </div>
             </div>
