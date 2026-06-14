@@ -1,0 +1,37 @@
+@using Microsoft.AspNetCore.Http
+
+@{
+    ViewData["Title"] = "借還傘";
+}
+
+<div class="row justify-content-center" style="margin-top: 30px;">
+    <div class="col-md-8">
+        <h1 class="mb-4">借還傘</h1>
+
+        <div class="alert alert-info">
+            你好，@Context.Session.GetString("Username")。目前登入卡號：@Context.Session.GetString("EasyCard")
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">借傘</h5>
+                        <p class="card-text">選擇站點與雨傘後進行借出。</p>
+                        <a asp-controller="Umbrellas" asp-action="Index" class="btn btn-info text-white">查看可借雨傘</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">還傘</h5>
+                        <p class="card-text">後續可接上還傘流程與交易紀錄。</p>
+                        <button class="btn btn-secondary" disabled>還傘功能待建立</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

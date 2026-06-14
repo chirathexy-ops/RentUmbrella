@@ -11,14 +11,24 @@
         <div class="col-md-4">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title">管理員系統</h5>
-                    <p class="card-text">管理系統後台人員帳號與權限。</p>
-                    <a asp-controller="Managers" asp-action="Index" class="btn btn-primary">進入管理</a>
+                    <h5 class="card-title">使用者借還傘</h5>
+                    <p class="card-text">輸入卡號登入後，進行借傘與還傘操作。</p>
+                    <a asp-controller="Accounts" asp-action="UserLogin" class="btn btn-info text-white">使用者登入</a>
                 </div>
             </div>
         </div>
 
         <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">管理員系統</h5>
+                    <p class="card-text">管理系統後台人員帳號與權限。</p>
+                    <a asp-controller="Accounts" asp-action="Index" class="btn btn-primary">進入管理</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mt-4 mt-md-0">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">贊助者管理</h5>
@@ -28,7 +38,7 @@
             </div>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-4 mt-4">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title">雨傘清單</h5>

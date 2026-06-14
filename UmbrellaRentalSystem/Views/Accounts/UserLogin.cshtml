@@ -1,0 +1,36 @@
+@{
+    ViewData["Title"] = "使用者登入";
+}
+
+<div class="row justify-content-center" style="margin-top: 50px;">
+    <div class="col-md-5">
+        <div class="card shadow-sm border-info">
+            <div class="card-header bg-info text-white text-center">
+                <h4 class="mb-0">使用者登入</h4>
+            </div>
+            <div class="card-body p-4">
+                <form asp-controller="Accounts" asp-action="UserLogin" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="form-group mb-3">
+                        <label class="form-label fw-bold">帳號或 Email</label>
+                        <input type="text" name="loginId" class="form-control" placeholder="請輸入帳號或 Email" required />
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label class="form-label fw-bold">密碼</label>
+                        <input type="password" name="password" class="form-control" placeholder="請輸入密碼" required />
+                    </div>
+
+                    <div class="form-group d-grid mb-3">
+                        <button type="submit" class="btn btn-info btn-lg text-white">登入借還傘</button>
+                    </div>
+
+                    <div class="text-center">
+                        <a asp-controller="Accounts" asp-action="Register">還沒有帳號？註冊使用者帳號</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,42 +1,124 @@
-﻿@using Microsoft.AspNetCore.Http
-@model IEnumerable<UmbrellaRentalSystem.Models.Umbrella>
+﻿@model IEnumerable<UmbrellaRentalSystem.Models.Umbrella>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "雨傘管理中心";
+    // 取得當前被選中的地點 ID
+    int? currentLocationId = ViewBag.CurrentLocation as int?;
+    bool isManager = ViewBag.IsManager == true;
 }
 
-<h1>Index</h1>
+<h1 class="mb-4">☔ 雨傘借還管理系統</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SponsorId)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SponsorId)
-            </td>
-            <td>
-                    <a asp-action="Edit" asp-route-id="@item.UmbrellaId">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.UmbrellaId">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.UmbrellaId">Delete</a>
-            </td>
-        </tr>
+@if (isManager)
+{
+    <p>
+        <a asp-action="Create" class="btn btn-primary">➕ 新增雨傘資料</a>
+    </p>
 }
-    </tbody>
-</table>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white font-weight-bold">
+                📍 站點位置篩選
+            </div>
+            <div class="list-group list-group-flush">
+                <a asp-action="Index"
+                   asp-route-locationId=""
+                   class="list-group-item list-group-item-action @(currentLocationId == null ? "active font-weight-bold" : "")">
+                    🌐 顯示所有站點
+                </a>
+
+                @if (ViewBag.Locations != null)
+                {
+                    foreach (var loc in ViewBag.Locations)
+                    {
+                        <a asp-action="Index"
+                           asp-route-locationId="@loc.LocationId"
+                           class="list-group-item list-group-item-action @(currentLocationId == loc.LocationId ? "active font-weight-bold" : "")">
+                            🏢 @loc.LocationName
+                        </a>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="card shadow-sm">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>雨傘編號</th>
+                            <th>目前狀態</th>
+                            <th>所在站點位置</th>
+                            <th>贊助商名稱</th>
+                            @if (isManager)
+                            {
+                                <th class="text-center">後台操作</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="@(isManager ? 5 : 4)" class="text-center text-muted py-4">
+                                    ❌ 該站點目前沒有任何雨傘資料。
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td class="font-weight-bold text-secondary" style="vertical-align: middle;">
+                                        # @item.UmbrellaId
+                                    </td>
+
+                                    <td style="vertical-align: middle;">
+                                        @if (item.Status == "Available")
+                                        {
+                                            <strong class="text-dark">在庫 (Available)</strong>
+                                        }
+                                        else if (item.Status == "Rented")
+                                        {
+                                            <strong class="text-dark">已借出 (Rented)</strong>
+                                        }
+                                        else if (item.Status == "Lost")
+                                        {
+                                            <strong class="text-dark">遺失 (Lost)</strong>
+                                        }
+                                        else
+                                        {
+                                            <strong class="text-dark">@item.Status</strong>
+                                        }
+                                    </td>
+
+                                    <td class="text-info font-weight-bold" style="vertical-align: middle;">
+                                        @(item.Location != null ? item.Location.LocationName : "⚠️ 未設置地點")
+                                    </td>
+
+                                    <td class="text-dark font-weight-bold" style="vertical-align: middle;">
+                                        @(item.Sponsor != null ? item.Sponsor.SponsorName : "無")
+                                    </td>
+
+                                    @if (isManager)
+                                    {
+                                        <td class="text-center" style="vertical-align: middle;">
+                                            <a asp-action="Edit" asp-route-id="@item.UmbrellaId" class="btn btn-sm btn-outline-primary">編輯</a> |
+                                            <a asp-action="Details" asp-route-id="@item.UmbrellaId" class="btn btn-sm btn-outline-info">詳情</a> |
+                                            <a asp-action="Delete" asp-route-id="@item.UmbrellaId" class="btn btn-sm btn-outline-danger">刪除</a>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

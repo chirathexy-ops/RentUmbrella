@@ -24,8 +24,11 @@
                             <span class="badge bg-secondary">@item.Status</span>
                         }
                     </p>
-                    <p class="card-text">
-                        <small class="text-muted">提供者編號：@item.SponsorId</small>
+                    <p class="text-dark mb-0">
+                        贊助商：@(item.Sponsor != null ? item.Sponsor.SponsorName : "無")
+                    </p>
+                    <p class="text-dark mb-0">
+                        目前地點：@(item.Location != null ? item.Location.LocationName : "無")
                     </p>
                 </div>
             </div>

@@ -21,12 +21,22 @@ namespace UmbrellaRentalSystem.Controllers
         // GET: Sponsors
         public async Task<IActionResult> Index()
         {
+            if (!IsManager())
+            {
+                return RedirectToAction("Login", "Accounts");
+            }
+
             return View(await _context.Sponsors.ToListAsync());
         }
 
         // GET: Sponsors/Details/1
         public async Task<IActionResult> Details(int? id)
         {
+            if (!IsManager())
+            {
+                return RedirectToAction("Login", "Accounts");
+            }
+
             if (id == null) return NotFound();
 
             // 修正：對應 Model 的 SponsorId
@@ -38,13 +48,26 @@ namespace UmbrellaRentalSystem.Controllers
             return View(sponsor);
         }
 
-        public IActionResult Create() => View();
+        public IActionResult Create()
+        {
+            if (!IsManager())
+            {
+                return RedirectToAction("Login", "Accounts");
+            }
+
+            return View();
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
         // 修正：只綁定 SponsorName
         public async Task<IActionResult> Create([Bind("SponsorName")] Sponsor sponsor)
         {
+            if (!IsManager())
+            {
+                return RedirectToAction("Login", "Accounts");
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(sponsor);
@@ -57,6 +80,11 @@ namespace UmbrellaRentalSystem.Controllers
         // GET: Sponsors/Edit/1
         public async Task<IActionResult> Edit(int? id)
         {
+            if (!IsManager())
+            {
+                return RedirectToAction("Login", "Accounts");
+            }
+
             if (id == null) return NotFound();
 
             var sponsor = await _context.Sponsors.FindAsync(id);
@@ -69,6 +97,11 @@ namespace UmbrellaRentalSystem.Controllers
         // 修正：綁定 SponsorId, SponsorName
         public async Task<IActionResult> Edit(int id, [Bind("SponsorId,SponsorName")] Sponsor sponsor)
         {
+            if (!IsManager())
+            {
+                return RedirectToAction("Login", "Accounts");
+            }
+
             if (id != sponsor.SponsorId) return NotFound();
 
             if (ModelState.IsValid)
@@ -91,6 +124,11 @@ namespace UmbrellaRentalSystem.Controllers
         // GET: Sponsors/Delete/1
         public async Task<IActionResult> Delete(int? id)
         {
+            if (!IsManager())
+            {
+                return RedirectToAction("Login", "Accounts");
+            }
+
             if (id == null) return NotFound();
 
             var sponsor = await _context.Sponsors
@@ -104,6 +142,11 @@ namespace UmbrellaRentalSystem.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            if (!IsManager())
+            {
+                return RedirectToAction("Login", "Accounts");
+            }
+
             var sponsor = await _context.Sponsors.FindAsync(id);
             if (sponsor != null)
             {
@@ -117,6 +160,12 @@ namespace UmbrellaRentalSystem.Controllers
         private bool SponsorExists(int id)
         {
             return _context.Sponsors.Any(e => e.SponsorId == id);
+        }
+
+        private bool IsManager()
+        {
+            return !string.IsNullOrEmpty(HttpContext.Session.GetString("Username"))
+                && string.Equals(HttpContext.Session.GetString("Role"), "Manager", StringComparison.OrdinalIgnoreCase);
         }
     }
 }

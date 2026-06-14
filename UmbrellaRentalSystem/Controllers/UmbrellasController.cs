@@ -21,13 +21,19 @@ namespace UmbrellaRentalSystem.Controllers
         }
 
         // GET: Umbrellas
+        // GET: Umbrellas
         public async Task<IActionResult> Index(int? locationId)
         {
+            ViewBag.IsManager = IsManager();
+
             // 1. 抓出所有地點，供側邊欄使用
             ViewBag.Locations = await _context.Locations.ToListAsync();
 
-            // 2. 抓出雨傘資料
-            var umbrellas = _context.Umbrellas.AsQueryable();
+            // 2. 抓出雨傘資料，並強制把「地點」與「贊助商」的關聯資料表一起連進來（重點！）
+            var umbrellas = _context.Umbrellas
+                                    .Include(u => u.Location) // 👈 負責抓地點名稱，解決「女二宿」與篩選問題
+                                    .Include(u => u.Sponsor)  // 👈 負責抓贊助商名稱，解決顯示「無」的問題
+                                    .AsQueryable();
 
             // 3. 如果有傳入地點 ID，就進行篩選
             if (locationId.HasValue)
@@ -61,9 +67,9 @@ namespace UmbrellaRentalSystem.Controllers
         public IActionResult Create()
         {
             // --- 安全檢查 ---
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("AdminName")))
+            if (!IsManager())
             {
-                return RedirectToAction("Login", "Managers");
+                return RedirectToAction("Login", "Accounts");
             }
             return View();
         }
@@ -74,9 +80,9 @@ namespace UmbrellaRentalSystem.Controllers
         public async Task<IActionResult> Create([Bind("Id,Status,SponsorId")] Umbrella umbrella)
         {
             // --- 安全檢查 ---
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("AdminName")))
+            if (!IsManager())
             {
-                return RedirectToAction("Login", "Managers");
+                return RedirectToAction("Login", "Accounts");
             }
 
             if (ModelState.IsValid)
@@ -92,9 +98,9 @@ namespace UmbrellaRentalSystem.Controllers
         public async Task<IActionResult> Edit(string id)
         {
             // --- 安全檢查 ---
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("AdminName")))
+            if (!IsManager())
             {
-                return RedirectToAction("Login", "Managers");
+                return RedirectToAction("Login", "Accounts");
             }
 
             if (id == null)
@@ -116,9 +122,9 @@ namespace UmbrellaRentalSystem.Controllers
         public async Task<IActionResult> Edit(string id, [Bind("Id,Status,SponsorId")] Umbrella umbrella)
         {
             // --- 安全檢查 ---
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("AdminName")))
+            if (!IsManager())
             {
-                return RedirectToAction("Login", "Managers");
+                return RedirectToAction("Login", "Accounts");
             }
 
             if (id != umbrella.UmbrellaId)
@@ -153,9 +159,9 @@ namespace UmbrellaRentalSystem.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             // --- 安全檢查 ---
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("AdminName")))
+            if (!IsManager())
             {
-                return RedirectToAction("Login", "Managers");
+                return RedirectToAction("Login", "Accounts");
             }
 
             if (id == null)
@@ -179,9 +185,9 @@ namespace UmbrellaRentalSystem.Controllers
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
             // --- 安全檢查 ---
-            if (string.IsNullOrEmpty(HttpContext.Session.GetString("AdminName")))
+            if (!IsManager())
             {
-                return RedirectToAction("Login", "Managers");
+                return RedirectToAction("Login", "Accounts");
             }
 
             var umbrella = await _context.Umbrellas.FindAsync(id);
@@ -199,10 +205,20 @@ namespace UmbrellaRentalSystem.Controllers
             return _context.Umbrellas.Any(e => e.UmbrellaId == id);
         }
 
+        private bool IsManager()
+        {
+            return !string.IsNullOrEmpty(HttpContext.Session.GetString("Username"))
+                && string.Equals(HttpContext.Session.GetString("Role"), "Manager", StringComparison.OrdinalIgnoreCase);
+        }
+
+        // GET: Umbrellas/Status
         public async Task<IActionResult> Status()
         {
-            // 增加 .OrderBy(u => u.Id)，讓雨傘編號排好
-            var umbrellas = await _context.Umbrellas.OrderBy(u => u.UmbrellaId).ToListAsync();
+            // 🎯 關鍵修改：補上 .Include(u => u.Sponsor)，這樣前端卡片才能用 @item.Sponsor.SponsorName 抓到名字！
+            var umbrellas = await _context.Umbrellas
+                                          .Include(u => u.Sponsor)
+                                          .OrderBy(u => u.UmbrellaId)
+                                          .ToListAsync();
             return View(umbrellas);
         }
     }

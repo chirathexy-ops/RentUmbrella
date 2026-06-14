@@ -36,6 +36,12 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Sponsors" asp-action="Index">贊助者管理</a>
                             </li>
                         }
+                        else if (Context.Session.GetString("Username") != null && Context.Session.GetString("Role")?.ToLower() == "user")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Accounts" asp-action="UserPage">借還傘</a>
+                            </li>
+                        }
 
                         @* 一般使用者與管理員都能看到的雨傘功能 *@
                         <li class="nav-item">
@@ -52,6 +58,12 @@
                         @* 修正：改用 Username 判斷是否「未登入」 *@
                         @if (Context.Session.GetString("Username") == null)
                         {
+                            <li class="nav-item">
+                                <a class="nav-link text-info fw-bold" asp-area="" asp-controller="Accounts" asp-action="UserLogin">使用者登入</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-success fw-bold" asp-area="" asp-controller="Accounts" asp-action="Register">註冊使用者帳號</a>
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-primary fw-bold" asp-area="" asp-controller="Accounts" asp-action="Login">系統登入</a>
                             </li>

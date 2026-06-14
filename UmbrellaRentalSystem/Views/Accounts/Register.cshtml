@@ -1,0 +1,58 @@
+@model UmbrellaRentalSystem.Models.Account
+
+@{
+    ViewData["Title"] = "新增使用者帳號";
+}
+
+<div class="row justify-content-center" style="margin-top: 30px;">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-info text-white text-center">
+                <h4 class="mb-0">新增使用者帳號</h4>
+            </div>
+            <div class="card-body p-4">
+                <form asp-controller="Accounts" asp-action="Register" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Name" class="form-label fw-bold">使用者名稱</label>
+                        <input asp-for="Name" class="form-control" required />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Password" class="form-label fw-bold">密碼</label>
+                        <input asp-for="Password" type="password" class="form-control" required />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="EasyCard" class="form-label fw-bold">卡號</label>
+                        <input asp-for="EasyCard" class="form-control" required />
+                        <span asp-validation-for="EasyCard" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" class="form-label fw-bold">Email</label>
+                        <input asp-for="Email" type="email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-4">
+                        <label asp-for="Phone" class="form-label fw-bold">電話</label>
+                        <input asp-for="Phone" class="form-control" />
+                        <span asp-validation-for="Phone" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group d-grid">
+                        <button type="submit" class="btn btn-info btn-lg text-white">建立帳號</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
