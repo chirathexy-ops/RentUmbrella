@@ -1,0 +1,29 @@
+﻿@model UmbrellaRentalSystem.Models.Sponsor
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Sponsor</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @* 修正：指令必須是 DisplayNameFor，裡面才是放你的變數名稱 *@
+            @Html.DisplayNameFor(model => model.SponsorName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SponsorName)
+        </dd>
+    </dl>
+
+    <form asp-action="Delete">
+        @* 修正：這裡的 asp-for 也要改成新的 ID 名稱 *@
+        <input type="hidden" asp-for="SponsorId" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>

@@ -1,0 +1,44 @@
+﻿@model IEnumerable<UmbrellaRentalSystem.Models.Sponsor>
+
+@{
+    ViewData["Title"] = "贊助者管理列表";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1>贊助者管理</h1>
+        <a asp-action="Create" class="btn btn-primary">➕ 新增贊助者</a>
+    </div>
+
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>
+                    贊助商編號
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.SponsorName)
+                </th>
+                <th>操作動作</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SponsorId)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SponsorName)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.SponsorId" class="btn btn-sm btn-warning">修改</a> |
+                        <a asp-action="Details" asp-route-id="@item.SponsorId" class="btn btn-sm btn-info">詳細</a> |
+                        <a asp-action="Delete" asp-route-id="@item.SponsorId" class="btn btn-sm btn-danger">刪除</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,26 @@
+﻿@model UmbrellaRentalSystem.Models.Sponsor
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Sponsor</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @* 修正 1：指令必須改回 DisplayNameFor *@
+            @Html.DisplayNameFor(model => model.SponsorName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SponsorName)
+        </dd>
+    </dl>
+</div>
+<div>
+    @* 修正 2：ID 的名稱要改為 SponsorId *@
+    <a asp-action="Edit" asp-route-id="@Model?.SponsorId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

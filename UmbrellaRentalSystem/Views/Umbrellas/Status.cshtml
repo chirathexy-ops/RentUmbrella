@@ -1,0 +1,39 @@
+﻿@model IEnumerable<UmbrellaRentalSystem.Models.Umbrella>
+
+@{
+    ViewData["Title"] = "雨傘即時狀態";
+}
+
+<h2 class="mb-4">☔ 雨傘即時狀態清單</h2>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-md-4 mb-3">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">編號：@item.UmbrellaId</h5>
+                    <p class="card-text">
+                        <strong>目前狀態：</strong>
+                        @if (item.Status == "在庫")
+                        {
+                            <span class="badge bg-success">可借用</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-secondary">@item.Status</span>
+                        }
+                    </p>
+                    <p class="card-text">
+                        <small class="text-muted">提供者編號：@item.SponsorId</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">目前沒有任何雨傘資訊。</div>
+}
