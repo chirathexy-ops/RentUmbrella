@@ -1,24 +1,38 @@
 @{
-    ViewData["Title"] = "還傘";
+    ViewData["Title"] = "歸還雨傘";
+    // ✨ 在最上面把 ViewBag 轉型成強型別清單，這樣下面寫程式碼比較乾淨，不會噴錯
     var myUmbrellas = ViewBag.MyRentedUmbrellasList as List<UmbrellaRentalSystem.Models.Umbrella>;
 }
 
 <div class="container" style="margin-top: 30px;">
-    <div class="row justify-content-center">
-        <div class="col-lg-7 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-dark text-white fw-bold">
-                    我的借出雨傘
+
+    @if (myUmbrellas == null || !myUmbrellas.Any())
+    {
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center">
+                <div class="card shadow-sm p-5">
+                    <div class="text-info mb-3" style="font-size: 3rem;">
+                        <i class="bi bi-info-circle-fill"></i>
+                    </div>
+                    <h4 class="fw-bold mb-3">💡 目前小提示</h4>
+                    <p class="text-muted mb-4">您目前名下沒有任何借用中的雨傘紀錄喔！</p>
+                    <a asp-controller="Accounts" asp-action="UserPage" class="btn btn-outline-secondary w-100">
+                        返回借還傘頁面
+                    </a>
                 </div>
-                <div class="card-body">
-                    @if (myUmbrellas == null || !myUmbrellas.Any())
-                    {
-                        <div class="text-center py-5">
-                            <h5 class="text-muted mb-0">目前沒有尚未歸還的雨傘。</h5>
-                        </div>
-                    }
-                    else
-                    {
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="row justify-content-center">
+
+            <div class="col-lg-7 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-dark text-white fw-bold">
+                        我的借出雨傘
+                    </div>
+                    <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-hover align-middle">
                                 <thead class="table-light">
@@ -49,30 +63,21 @@
                                 </tbody>
                             </table>
                         </div>
-                    }
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="col-lg-5 mb-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-header bg-warning text-dark text-center fw-bold">
-                    <h4 class="mb-0">還傘</h4>
-                </div>
-                <div class="card-body p-4">
-                    @if (TempData["ErrorMessage"] != null)
-                    {
-                        <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
-                    }
+            <div class="col-lg-5 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-warning text-dark text-center fw-bold">
+                        <h4 class="mb-0">還傘</h4>
+                    </div>
+                    <div class="card-body p-4">
+                        @if (TempData["ErrorMessage"] != null)
+                        {
+                            <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
+                        }
 
-                    @if (myUmbrellas == null || !myUmbrellas.Any())
-                    {
-                        <a asp-controller="Accounts" asp-action="UserPage" class="btn btn-outline-secondary w-100">
-                            返回借還傘頁面
-                        </a>
-                    }
-                    else
-                    {
                         <form asp-controller="Umbrellas" asp-action="ReturnUmbrella" method="post">
                             <div class="form-group mb-3">
                                 <label class="form-label fw-bold">1. 選擇要歸還的雨傘</label>
@@ -97,9 +102,10 @@
                                 </a>
                             </div>
                         </form>
-                    }
+                    </div>
                 </div>
             </div>
+
         </div>
-    </div>
+    }
 </div>
