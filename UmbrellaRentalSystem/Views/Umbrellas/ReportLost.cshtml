@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "通報雨傘遺失";
 }
 
@@ -6,10 +6,9 @@
     <div class="col-md-6">
         <div class="card shadow-sm">
             <div class="card-header bg-danger text-white text-center">
-                <h4 class="mb-0"><i class="bi bi-exclamation-triangle-fill"></i> 通報雨傘遺失</h4>
+                <h4 class="mb-0">通報雨傘遺失</h4>
             </div>
             <div class="card-body p-4">
-
                 @if (TempData["ErrorMessage"] != null)
                 {
                     <div class="alert alert-danger">@TempData["ErrorMessage"]</div>
@@ -20,10 +19,9 @@
                 </div>
 
                 <form asp-controller="Umbrellas" asp-action="ReportLost" method="post">
-
                     <div class="form-group mb-3">
                         <label class="form-label fw-bold text-danger">請選擇您目前遺失的雨傘編號</label>
-                        <select name="umbrellaId" class="form-select form-control-lg" asp-items="ViewBag.MyRentedUmbrellas" required>
+                        <select name="umbrellaCode" class="form-select form-control-lg" asp-items="ViewBag.MyRentedUmbrellas" required>
                             <option value="">-- 請選擇您手上遺失的雨傘 --</option>
                         </select>
                     </div>
@@ -37,12 +35,9 @@
                         <button type="submit" class="btn btn-danger btn-lg shadow-sm" onclick="return confirm('確定要通報這把雨傘遺失嗎？送出後將變更系統狀態。')">
                             確認送出通報
                         </button>
-                        <a asp-controller="Umbrellas" asp-action="Index" class="btn btn-outline-secondary">
-                            返回首頁
-                        </a>
+                        <a asp-controller="Umbrellas" asp-action="Index" class="btn btn-outline-secondary">返回首頁</a>
                     </div>
                 </form>
-
             </div>
         </div>
     </div>

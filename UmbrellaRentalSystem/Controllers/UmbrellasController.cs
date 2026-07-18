@@ -37,12 +37,12 @@ namespace UmbrellaRentalSystem.Controllers
                 ViewBag.CurrentLocation = locationId;
             }
 
-            return View(await umbrellas.OrderBy(u => u.UmbrellaId).ToListAsync());
+            return View(await umbrellas.OrderBy(u => u.UmbrellaCode).ToListAsync());
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RentUmbrella(string umbrellaId)
+        public async Task<IActionResult> RentUmbrella(string umbrellaCode)
         {
             var currentUsername = HttpContext.Session.GetString("Username");
             var accountId = HttpContext.Session.GetInt32("AccountId");
@@ -52,13 +52,13 @@ namespace UmbrellaRentalSystem.Controllers
                 return RedirectToAction("UserLogin", "Accounts");
             }
 
-            if (string.IsNullOrEmpty(umbrellaId))
+            if (string.IsNullOrEmpty(umbrellaCode))
             {
                 return NotFound();
             }
 
-            var umbrella = await _context.Umbrellas.FirstOrDefaultAsync(u => u.UmbrellaId == umbrellaId);
-            if (umbrella == null || !(string.Equals(umbrella.Status, "Available", StringComparison.OrdinalIgnoreCase) || umbrella.Status == "在庫" || umbrella.Status == "?典澈"))
+            var umbrella = await _context.Umbrellas.FirstOrDefaultAsync(u => u.UmbrellaCode == umbrellaCode);
+            if (umbrella == null || !IsAvailableStatus(umbrella.Status))
             {
                 TempData["ErrorMessage"] = "很抱歉，這把雨傘目前無法借用。";
                 return RedirectToAction(nameof(Index));
@@ -73,7 +73,7 @@ namespace UmbrellaRentalSystem.Controllers
                 _context.Transactions.Add(new Transaction
                 {
                     AccountId = accountId.Value,
-                    UmbrellaId = umbrella.UmbrellaId,
+                    UmbrellaId = umbrella.UmbrellaCode,
                     LendDate = DateTime.Now,
                     LendLocationId = lendLocationId,
                     Status = "Active"
@@ -82,7 +82,7 @@ namespace UmbrellaRentalSystem.Controllers
                 _context.Update(umbrella);
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = $"借傘成功！已成功借用雨傘編號 #{umbrellaId}。";
+                TempData["SuccessMessage"] = $"借傘成功！已成功借用雨傘編號 #{umbrella.UmbrellaCode}。";
             }
             catch (Exception)
             {
@@ -92,7 +92,7 @@ namespace UmbrellaRentalSystem.Controllers
             return RedirectToAction(nameof(Index), new { locationId = lendLocationId });
         }
 
-        public async Task<IActionResult> ReturnUmbrella(string? umbrellaId)
+        public async Task<IActionResult> ReturnUmbrella(string? umbrellaCode)
         {
             if (!IsUser())
             {
@@ -107,24 +107,24 @@ namespace UmbrellaRentalSystem.Controllers
                 return RedirectToAction("UserLogin", "Accounts");
             }
 
-            var myActiveUmbrellaIds = await _context.Transactions
+            var myActiveUmbrellaCodes = await _context.Transactions
                 .Where(t => t.AccountId == accountId.Value && t.Status == "Active" && t.ReturnDate == null)
                 .Select(t => t.UmbrellaId)
                 .ToListAsync();
 
             var myRentedUmbrellas = new List<Umbrella>();
-            if (myActiveUmbrellaIds.Any())
+            if (myActiveUmbrellaCodes.Any())
             {
                 myRentedUmbrellas = await _context.Umbrellas
                     .Include(u => u.Sponsor)
-                    .Where(u => myActiveUmbrellaIds.Contains(u.UmbrellaId))
-                    .OrderBy(u => u.UmbrellaId)
+                    .Where(u => myActiveUmbrellaCodes.Contains(u.UmbrellaCode))
+                    .OrderBy(u => u.UmbrellaCode)
                     .ToListAsync();
             }
 
             ViewBag.MyRentedUmbrellasList = myRentedUmbrellas;
-            ViewBag.SelectedUmbrellaId = umbrellaId;
-            ViewBag.RentedUmbrellas = new SelectList(myRentedUmbrellas, "UmbrellaId", "UmbrellaId", umbrellaId);
+            ViewBag.SelectedUmbrellaCode = umbrellaCode;
+            ViewBag.RentedUmbrellas = new SelectList(myRentedUmbrellas, "UmbrellaCode", "UmbrellaCode", umbrellaCode);
             ViewBag.Locations = new SelectList(
                 await _context.Locations.OrderBy(l => l.LocationName).ToListAsync(),
                 "LocationId",
@@ -135,7 +135,7 @@ namespace UmbrellaRentalSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ReturnUmbrella(string umbrellaId, int returnLocationId)
+        public async Task<IActionResult> ReturnUmbrella(string umbrellaCode, int returnLocationId)
         {
             var currentUsername = HttpContext.Session.GetString("Username");
             var accountId = HttpContext.Session.GetInt32("AccountId");
@@ -145,12 +145,12 @@ namespace UmbrellaRentalSystem.Controllers
                 return RedirectToAction("UserLogin", "Accounts");
             }
 
-            if (string.IsNullOrEmpty(umbrellaId))
+            if (string.IsNullOrEmpty(umbrellaCode))
             {
                 return NotFound();
             }
 
-            var umbrella = await _context.Umbrellas.FirstOrDefaultAsync(u => u.UmbrellaId == umbrellaId);
+            var umbrella = await _context.Umbrellas.FirstOrDefaultAsync(u => u.UmbrellaCode == umbrellaCode);
             if (umbrella == null || umbrella.Status != "Rented")
             {
                 TempData["ErrorMessage"] = "錯誤：這把雨傘目前並非被借出狀態，無法歸還。";
@@ -159,7 +159,7 @@ namespace UmbrellaRentalSystem.Controllers
 
             var activeTransaction = await _context.Transactions
                 .Where(t => t.AccountId == accountId.Value
-                    && t.UmbrellaId == umbrellaId
+                    && t.UmbrellaId == umbrellaCode
                     && t.Status == "Active"
                     && t.ReturnDate == null)
                 .OrderByDescending(t => t.LendDate)
@@ -175,7 +175,7 @@ namespace UmbrellaRentalSystem.Controllers
             if (returnLocation == null)
             {
                 TempData["ErrorMessage"] = "請選擇有效的還傘地點。";
-                return RedirectToAction(nameof(ReturnUmbrella), new { umbrellaId });
+                return RedirectToAction(nameof(ReturnUmbrella), new { umbrellaCode });
             }
 
             try
@@ -191,7 +191,7 @@ namespace UmbrellaRentalSystem.Controllers
                 _context.Update(umbrella);
                 await _context.SaveChangesAsync();
 
-                TempData["SuccessMessage"] = $"還傘成功！雨傘編號 #{umbrellaId} 已歸還至 {returnLocation.LocationName}。";
+                TempData["SuccessMessage"] = $"還傘成功！雨傘編號 #{umbrella.UmbrellaCode} 已歸還至 {returnLocation.LocationName}。";
             }
             catch (Exception)
             {
@@ -201,13 +201,8 @@ namespace UmbrellaRentalSystem.Controllers
             return RedirectToAction(nameof(Index), new { locationId = returnLocationId });
         }
 
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
             var umbrella = await _context.Umbrellas
                 .Include(u => u.Location)
                 .Include(u => u.Sponsor)
@@ -227,12 +222,12 @@ namespace UmbrellaRentalSystem.Controllers
                 return RedirectToAction("Login", "Accounts");
             }
 
-            return View(new Umbrella { UmbrellaId = string.Empty, Status = "Available" });
+            return View(new Umbrella { Status = "Available" });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("UmbrellaId,Status,LocationId,SponsorId")] Umbrella umbrella)
+        public async Task<IActionResult> Create([Bind("UmbrellaCode,Status,LocationId,SponsorId")] Umbrella umbrella)
         {
             if (!IsManager())
             {
@@ -254,16 +249,11 @@ namespace UmbrellaRentalSystem.Controllers
             return View(umbrella);
         }
 
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(int id)
         {
             if (!IsManager())
             {
                 return RedirectToAction("Login", "Accounts");
-            }
-
-            if (id == null)
-            {
-                return NotFound();
             }
 
             var umbrella = await _context.Umbrellas.FindAsync(id);
@@ -277,7 +267,7 @@ namespace UmbrellaRentalSystem.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("UmbrellaId,Status,LocationId,SponsorId")] Umbrella umbrella)
+        public async Task<IActionResult> Edit(int id, [Bind("UmbrellaId,UmbrellaCode,Status,LocationId,SponsorId")] Umbrella umbrella)
         {
             if (!IsManager())
             {
@@ -312,16 +302,11 @@ namespace UmbrellaRentalSystem.Controllers
             return View(umbrella);
         }
 
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
             if (!IsManager())
             {
                 return RedirectToAction("Login", "Accounts");
-            }
-
-            if (id == null)
-            {
-                return NotFound();
             }
 
             var umbrella = await _context.Umbrellas
@@ -336,7 +321,7 @@ namespace UmbrellaRentalSystem.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (!IsManager())
             {
@@ -358,7 +343,7 @@ namespace UmbrellaRentalSystem.Controllers
             var umbrellas = await _context.Umbrellas
                 .Include(u => u.Sponsor)
                 .Include(u => u.Location)
-                .OrderBy(u => u.UmbrellaId)
+                .OrderBy(u => u.UmbrellaCode)
                 .ToListAsync();
 
             return View(umbrellas);
@@ -379,22 +364,22 @@ namespace UmbrellaRentalSystem.Controllers
                 return RedirectToAction("UserLogin", "Accounts");
             }
 
-            var myActiveUmbrellaIds = await _context.Transactions
+            var myActiveUmbrellaCodes = await _context.Transactions
                 .Where(t => t.AccountId == accountId.Value && t.Status == "Active" && t.ReturnDate == null)
                 .Select(t => t.UmbrellaId)
                 .ToListAsync();
 
             var myRentedUmbrellas = await _context.Umbrellas
-                .Where(u => myActiveUmbrellaIds.Contains(u.UmbrellaId))
+                .Where(u => myActiveUmbrellaCodes.Contains(u.UmbrellaCode))
                 .ToListAsync();
 
-            ViewBag.MyRentedUmbrellas = new SelectList(myRentedUmbrellas, "UmbrellaId", "UmbrellaId");
+            ViewBag.MyRentedUmbrellas = new SelectList(myRentedUmbrellas, "UmbrellaCode", "UmbrellaCode");
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ReportLost(string umbrellaId, string description)
+        public async Task<IActionResult> ReportLost(string umbrellaCode, string description)
         {
             if (!IsUser())
             {
@@ -407,14 +392,14 @@ namespace UmbrellaRentalSystem.Controllers
                 return RedirectToAction("UserLogin", "Accounts");
             }
 
-            if (string.IsNullOrEmpty(umbrellaId))
+            if (string.IsNullOrEmpty(umbrellaCode))
             {
                 TempData["ErrorMessage"] = "請選擇遺失的雨傘。";
                 return RedirectToAction(nameof(ReportLost));
             }
 
             var activeTransaction = await _context.Transactions
-                .Where(t => t.UmbrellaId == umbrellaId
+                .Where(t => t.UmbrellaId == umbrellaCode
                     && t.AccountId == accountId.Value
                     && t.Status == "Active"
                     && t.ReturnDate == null)
@@ -426,7 +411,7 @@ namespace UmbrellaRentalSystem.Controllers
                 return RedirectToAction(nameof(ReportLost));
             }
 
-            var umbrella = await _context.Umbrellas.FirstOrDefaultAsync(u => u.UmbrellaId == umbrellaId);
+            var umbrella = await _context.Umbrellas.FirstOrDefaultAsync(u => u.UmbrellaCode == umbrellaCode);
             if (umbrella == null)
             {
                 return NotFound();
@@ -450,7 +435,7 @@ namespace UmbrellaRentalSystem.Controllers
                 });
 
                 await _context.SaveChangesAsync();
-                TempData["SuccessMessage"] = $"雨傘 #{umbrellaId} 遺失通報成功。";
+                TempData["SuccessMessage"] = $"雨傘 #{umbrella.UmbrellaCode} 遺失通報成功。";
             }
             catch (Exception)
             {
@@ -460,9 +445,15 @@ namespace UmbrellaRentalSystem.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool UmbrellaExists(string id)
+        private bool UmbrellaExists(int id)
         {
             return _context.Umbrellas.Any(e => e.UmbrellaId == id);
+        }
+
+        private static bool IsAvailableStatus(string? status)
+        {
+            return string.Equals(status, "Available", StringComparison.OrdinalIgnoreCase)
+                || status == "在庫";
         }
 
         private bool IsManager()

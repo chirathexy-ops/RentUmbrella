@@ -1,21 +1,19 @@
 @model UmbrellaRentalSystem.Models.Umbrella
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "新增雨傘";
 }
 
-<h1>Create</h1>
+<h1>新增雨傘</h1>
 
-<h4>Umbrella</h4>
-<hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="UmbrellaId" class="control-label"></label>
-                <input asp-for="UmbrellaId" class="form-control" />
-                <span asp-validation-for="UmbrellaId" class="text-danger"></span>
+                <label asp-for="UmbrellaCode" class="control-label"></label>
+                <input asp-for="UmbrellaCode" class="form-control" placeholder="例如 U001" />
+                <span asp-validation-for="UmbrellaCode" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Status" class="control-label"></label>
@@ -32,7 +30,7 @@
                 <input asp-for="SponsorId" class="form-control" />
                 <span asp-validation-for="SponsorId" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group mt-3">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>

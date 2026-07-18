@@ -24,7 +24,7 @@ namespace UmbrellaRentalSystem.Migrations
 
             modelBuilder.Entity("UmbrellaRentalSystem.Models.Account", b =>
                 {
-                    b.Property<int>("Account_ID")
+                    b.Property<int>("AccountId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
@@ -51,7 +51,7 @@ namespace UmbrellaRentalSystem.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("Account_ID");
+                    b.HasKey("AccountId");
 
                     b.ToTable("Accounts");
                 });
@@ -155,7 +155,15 @@ namespace UmbrellaRentalSystem.Migrations
 
             modelBuilder.Entity("UmbrellaRentalSystem.Models.Umbrella", b =>
                 {
-                    b.Property<string>("UmbrellaId")
+                    b.Property<int>("UmbrellaId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:Identity", "1, 1");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UmbrellaId"));
+
+                    b.Property<string>("UmbrellaCode")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("LocationId")

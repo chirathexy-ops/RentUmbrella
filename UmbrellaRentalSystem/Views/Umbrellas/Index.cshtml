@@ -18,6 +18,7 @@
         @if (isUserLoggedIn)
         {
             <a asp-action="ReturnUmbrella" class="btn btn-warning font-weight-bold text-dark">我的借傘狀態 / 歸還雨傘</a>
+            <a asp-action="ReportLost" class="btn btn-danger font-weight-bold text-white">通報遺失</a>
         }
     </div>
 </div>
@@ -38,9 +39,7 @@
 <div class="row">
     <div class="col-md-3">
         <div class="card shadow-sm">
-            <div class="card-header bg-dark text-white font-weight-bold">
-                站點位置篩選
-            </div>
+            <div class="card-header bg-dark text-white font-weight-bold">站點位置篩選</div>
             <div class="list-group list-group-flush">
                 <a asp-action="Index" asp-route-locationId=""
                    class="list-group-item list-group-item-action @(currentLocationId == null ? "active font-weight-bold" : "")">
@@ -66,6 +65,7 @@
                 <table class="table table-hover mb-0">
                     <thead class="thead-light">
                         <tr>
+                            <th>資料庫編號</th>
                             <th>雨傘編號</th>
                             <th>目前狀態</th>
                             <th>所在站點位置</th>
@@ -80,7 +80,7 @@
                         @if (!Model.Any())
                         {
                             <tr>
-                                <td colspan="@(isManager || isUserLoggedIn ? 5 : 4)" class="text-center text-muted py-4">
+                                <td colspan="@(isManager || isUserLoggedIn ? 6 : 5)" class="text-center text-muted py-4">
                                     該站點目前沒有任何雨傘資料。
                                 </td>
                             </tr>
@@ -90,10 +90,9 @@
                             foreach (var item in Model)
                             {
                                 <tr>
-                                    <td class="font-weight-bold text-secondary" style="vertical-align: middle;">
-                                        # @item.UmbrellaId
-                                    </td>
-                                    <td style="vertical-align: middle;">
+                                    <td>@item.UmbrellaId</td>
+                                    <td class="font-weight-bold text-secondary"># @item.UmbrellaCode</td>
+                                    <td>
                                         @if (item.Status == "Available" || item.Status == "在庫")
                                         {
                                             <span class="badge bg-success text-white px-2 py-1">在庫 (Available)</span>
@@ -111,16 +110,12 @@
                                             <span class="badge bg-light text-dark px-2 py-1">@item.Status</span>
                                         }
                                     </td>
-                                    <td class="text-info font-weight-bold" style="vertical-align: middle;">
-                                        @(item.Location != null ? item.Location.LocationName : "無")
-                                    </td>
-                                    <td class="text-dark font-weight-bold" style="vertical-align: middle;">
-                                        @(item.Sponsor != null ? item.Sponsor.SponsorName : "無")
-                                    </td>
+                                    <td class="text-info font-weight-bold">@(item.Location != null ? item.Location.LocationName : "無")</td>
+                                    <td class="text-dark font-weight-bold">@(item.Sponsor != null ? item.Sponsor.SponsorName : "無")</td>
 
                                     @if (isManager || isUserLoggedIn)
                                     {
-                                        <td class="text-center" style="vertical-align: middle;">
+                                        <td class="text-center">
                                             @if (isManager)
                                             {
                                                 <a asp-action="Edit" asp-route-id="@item.UmbrellaId" class="btn btn-sm btn-outline-primary">編輯</a> <span>|</span>
@@ -132,10 +127,8 @@
                                                 @if (item.Status == "Available" || item.Status == "在庫")
                                                 {
                                                     <form asp-action="RentUmbrella" method="post" style="display:inline;">
-                                                        <input type="hidden" name="umbrellaId" value="@item.UmbrellaId" />
-                                                        <button type="submit" class="btn btn-sm btn-success font-weight-bold px-3">
-                                                            立即借傘
-                                                        </button>
+                                                        <input type="hidden" name="umbrellaCode" value="@item.UmbrellaCode" />
+                                                        <button type="submit" class="btn btn-sm btn-success font-weight-bold px-3">立即借傘</button>
                                                     </form>
                                                 }
                                                 else

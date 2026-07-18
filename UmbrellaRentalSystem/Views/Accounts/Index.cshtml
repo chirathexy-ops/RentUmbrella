@@ -1,4 +1,4 @@
-﻿@model IEnumerable<UmbrellaRentalSystem.Models.Account>
+@model IEnumerable<UmbrellaRentalSystem.Models.Account>
 
 @{
     ViewData["Title"] = "Index";
@@ -55,9 +55,9 @@
                 @Html.DisplayFor(modelItem => item.Role)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Account_ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Account_ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Account_ID">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.AccountId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.AccountId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.AccountId">Delete</a>
             </td>
         </tr>
 }

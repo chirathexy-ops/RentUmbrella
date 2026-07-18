@@ -15,7 +15,7 @@ namespace UmbrellaRentalSystem.Migrations
                 name: "Accounts",
                 columns: table => new
                 {
-                    Account_ID = table.Column<int>(type: "int", nullable: false)
+                    AccountId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -26,7 +26,7 @@ namespace UmbrellaRentalSystem.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Accounts", x => x.Account_ID);
+                    table.PrimaryKey("PK_Accounts", x => x.AccountId);
                 });
 
             migrationBuilder.CreateTable(
@@ -78,7 +78,9 @@ namespace UmbrellaRentalSystem.Migrations
                 name: "Umbrellas",
                 columns: table => new
                 {
-                    UmbrellaId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    UmbrellaId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UmbrellaCode = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LocationId = table.Column<int>(type: "int", nullable: false),
                     SponsorId = table.Column<int>(type: "int", nullable: false)

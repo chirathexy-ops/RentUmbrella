@@ -8,7 +8,7 @@ namespace UmbrellaRentalSystem.Data
         public static void Initialize(ApplicationDbContext context)
         {
             context.Database.EnsureCreated();
-            EnsureTransactionTables(context);
+            EnsureSchema(context);
 
             if (!context.Sponsors.Any())
             {
@@ -21,14 +21,11 @@ namespace UmbrellaRentalSystem.Data
             }
         }
 
-        private static void EnsureTransactionTables(ApplicationDbContext context)
+        private static void EnsureSchema(ApplicationDbContext context)
         {
-            RenameColumnIfExists(context, "Umbrellas", "Umbrella_ID", "UmbrellaId");
-            RenameColumnIfExists(context, "Umbrellas", "Location_ID", "LocationId");
-            RenameColumnIfExists(context, "Umbrellas", "Sponsor_ID", "SponsorId");
+            RenameColumnIfExists(context, "Accounts", "Account_ID", "AccountId");
+            EnsureUmbrellaIdentitySchema(context);
             RenameColumnIfExists(context, "Transactions", "Transaction_ID", "TransactionId");
-            RenameColumnIfExists(context, "Transactions", "Account_ID", "AccountId");
-            RenameColumnIfExists(context, "Transactions", "Umbrella_ID", "UmbrellaId");
             RenameColumnIfExists(context, "Transactions", "LendLocation_ID", "LendLocationId");
             RenameColumnIfExists(context, "Transactions", "ReturnLocation_ID", "ReturnLocationId");
             RenameColumnIfExists(context, "LostReports", "Report_ID", "ReportId");
@@ -61,6 +58,54 @@ BEGIN
         [Description] nvarchar(max) NULL,
         [IsProcessed] bit NOT NULL,
         CONSTRAINT [PK_LostReports] PRIMARY KEY ([ReportId])
+    );
+END");
+        }
+
+        private static void EnsureUmbrellaIdentitySchema(ApplicationDbContext context)
+        {
+            context.Database.ExecuteSqlRaw(@"
+IF OBJECT_ID(N'[Umbrellas]', N'U') IS NOT NULL
+    AND COL_LENGTH(N'[Umbrellas]', N'UmbrellaCode') IS NULL
+    AND COL_LENGTH(N'[Umbrellas]', N'UmbrellaId') IS NOT NULL
+BEGIN
+    EXEC sp_rename N'[Umbrellas].[UmbrellaId]', N'UmbrellaCode', N'COLUMN';
+END");
+
+            context.Database.ExecuteSqlRaw(@"
+IF OBJECT_ID(N'[Umbrellas]', N'U') IS NOT NULL
+    AND COL_LENGTH(N'[Umbrellas]', N'UmbrellaId') IS NULL
+BEGIN
+    CREATE TABLE [Umbrellas_New] (
+        [UmbrellaId] int NOT NULL IDENTITY,
+        [UmbrellaCode] nvarchar(450) NOT NULL,
+        [Status] nvarchar(max) NOT NULL,
+        [LocationId] int NOT NULL,
+        [SponsorId] int NOT NULL,
+        -- Use a temporary constraint name. SQL Server constraint names are
+        -- database-wide, so PK_Umbrellas is still owned by the old table until
+        -- that table is dropped.
+        CONSTRAINT [PK_Umbrellas_New] PRIMARY KEY ([UmbrellaId])
+    );
+
+    INSERT INTO [Umbrellas_New] ([UmbrellaCode], [Status], [LocationId], [SponsorId])
+    SELECT [UmbrellaCode], [Status], [LocationId], [SponsorId]
+    FROM [Umbrellas];
+
+    DROP TABLE [Umbrellas];
+    EXEC sp_rename N'[Umbrellas_New]', N'Umbrellas';
+END");
+
+            context.Database.ExecuteSqlRaw(@"
+IF OBJECT_ID(N'[Umbrellas]', N'U') IS NULL
+BEGIN
+    CREATE TABLE [Umbrellas] (
+        [UmbrellaId] int NOT NULL IDENTITY,
+        [UmbrellaCode] nvarchar(450) NOT NULL,
+        [Status] nvarchar(max) NOT NULL,
+        [LocationId] int NOT NULL,
+        [SponsorId] int NOT NULL,
+        CONSTRAINT [PK_Umbrellas] PRIMARY KEY ([UmbrellaId])
     );
 END");
         }

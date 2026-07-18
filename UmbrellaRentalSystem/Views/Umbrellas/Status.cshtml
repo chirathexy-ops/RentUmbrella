@@ -12,7 +12,7 @@
         <div class="col-md-4 mb-3">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <h5 class="card-title">編號：@item.UmbrellaId</h5>
+                    <h5 class="card-title">編號：@item.UmbrellaCode</h5>
                     <p class="card-text">
                         <strong>目前狀態：</strong>
                         @if (item.Status == "Available" || item.Status == "在庫")
@@ -24,12 +24,8 @@
                             <span class="badge bg-secondary">@item.Status</span>
                         }
                     </p>
-                    <p class="text-dark mb-0">
-                        贊助商：@(item.Sponsor != null ? item.Sponsor.SponsorName : "無")
-                    </p>
-                    <p class="text-dark mb-0">
-                        目前地點：@(item.Location != null ? item.Location.LocationName : "無")
-                    </p>
+                    <p class="text-dark mb-0">贊助商：@(item.Sponsor != null ? item.Sponsor.SponsorName : "無")</p>
+                    <p class="text-dark mb-0">目前地點：@(item.Location != null ? item.Location.LocationName : "無")</p>
                 </div>
             </div>
         </div>

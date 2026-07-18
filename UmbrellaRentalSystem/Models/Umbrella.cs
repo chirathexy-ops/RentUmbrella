@@ -6,8 +6,12 @@ namespace UmbrellaRentalSystem.Models
     public class Umbrella
     {
         [Key]
+        [Display(Name = "資料庫編號")]
+        public int UmbrellaId { get; set; }
+
+        [Required]
         [Display(Name = "雨傘編號")]
-        public required string UmbrellaId { get; set; }
+        public string UmbrellaCode { get; set; } = string.Empty;
 
         [Required]
         [Display(Name = "雨傘狀態")]
