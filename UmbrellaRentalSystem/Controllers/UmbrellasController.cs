@@ -222,6 +222,12 @@ namespace UmbrellaRentalSystem.Controllers
                 return RedirectToAction("Login", "Accounts");
             }
 
+            // 撈出所有地點，設定傳送 Id，畫面上顯示名稱 
+            ViewData["LocationId"] = new SelectList(_context.Locations, "LocationId", "LocationName");
+
+            // 撈出所有贊助商，設定傳送 Id，畫面上顯示名稱
+            ViewData["SponsorId"] = new SelectList(_context.Sponsors, "SponsorId", "SponsorName");
+
             return View(new Umbrella { Status = "Available" });
         }
 
@@ -249,6 +255,7 @@ namespace UmbrellaRentalSystem.Controllers
             return View(umbrella);
         }
 
+        // GET: Umbrellas/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
             if (!IsManager())
@@ -262,9 +269,14 @@ namespace UmbrellaRentalSystem.Controllers
                 return NotFound();
             }
 
+            // 關鍵！撈出地點與贊助商清單傳給 View
+            ViewData["LocationId"] = new SelectList(_context.Locations.OrderBy(l => l.LocationName), "LocationId", "LocationName", umbrella.LocationId);
+            ViewData["SponsorId"] = new SelectList(_context.Sponsors.OrderBy(s => s.SponsorName), "SponsorId", "SponsorName", umbrella.SponsorId);
+
             return View(umbrella);
         }
 
+        // POST: Umbrellas/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("UmbrellaId,UmbrellaCode,Status,LocationId,SponsorId")] Umbrella umbrella)
@@ -285,6 +297,7 @@ namespace UmbrellaRentalSystem.Controllers
                 {
                     _context.Update(umbrella);
                     await _context.SaveChangesAsync();
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -292,16 +305,19 @@ namespace UmbrellaRentalSystem.Controllers
                     {
                         return NotFound();
                     }
-
-                    throw;
+                    else
+                    {
+                        throw;
+                    }
                 }
-
-                return RedirectToAction(nameof(Index));
             }
+
+            // 驗證失敗時，也要重新載入下拉選單，否則畫面會報錯
+            ViewData["LocationId"] = new SelectList(_context.Locations.OrderBy(l => l.LocationName), "LocationId", "LocationName", umbrella.LocationId);
+            ViewData["SponsorId"] = new SelectList(_context.Sponsors.OrderBy(s => s.SponsorName), "SponsorId", "SponsorName", umbrella.SponsorId);
 
             return View(umbrella);
         }
-
         public async Task<IActionResult> Delete(int id)
         {
             if (!IsManager())
