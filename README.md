@@ -12,7 +12,7 @@ This project simulates a real-world umbrella sharing service, allowing users to 
 
 ## Home
 
-> *(Insert screenshot here)*
+> (assets/screenshots/home.png)
 
 ---
 
