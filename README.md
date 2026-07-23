@@ -12,7 +12,7 @@ This project simulates a real-world umbrella sharing service, allowing users to 
 
 ## Home
 
-> ![Home]((./UmbrellaRentalSystem/assets/screenshots/home.png))
+> ![Home](UmbrellaRentalSystem/assets/screenshots/home.png)
 
 ---
 
