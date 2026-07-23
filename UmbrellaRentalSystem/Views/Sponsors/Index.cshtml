@@ -1,44 +1,75 @@
 ﻿@model IEnumerable<UmbrellaRentalSystem.Models.Sponsor>
 
 @{
-    ViewData["Title"] = "贊助者管理列表";
+    ViewData["Title"] = "贊助者管理";
+
+    // 初始化流水號計數器
+    int index = 1;
 }
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <h1>贊助者管理</h1>
-        <a asp-action="Create" class="btn btn-primary">➕ 新增贊助者</a>
+    <!-- 標題與新增按鈕區塊 -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">贊助者管理</h2>
+        </div>
+        <a asp-action="Create" class="btn btn-primary px-4 rounded-pill shadow-sm fw-bold">
+            + 新增贊助者
+        </a>
     </div>
 
-    <table class="table table-striped table-hover">
-        <thead>
-            <tr>
-                <th>
-                    贊助商編號
-                </th>
-                <th>
-                    @Html.DisplayNameFor(model => model.SponsorName)
-                </th>
-                <th>操作動作</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.SponsorId)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.SponsorName)
-                    </td>
-                    <td>
-                        <a asp-action="Edit" asp-route-id="@item.SponsorId" class="btn btn-sm btn-warning">修改</a> |
-                        <a asp-action="Details" asp-route-id="@item.SponsorId" class="btn btn-sm btn-info">詳細</a> |
-                        <a asp-action="Delete" asp-route-id="@item.SponsorId" class="btn btn-sm btn-danger">刪除</a>
-                    </td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
+            <strong>@TempData["SuccessMessage"]</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- 表格卡片區塊 -->
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <!-- 新增「編號」標頭 -->
+                            <th class="ps-4" style="width: 100px;">編號</th>
+                            <th>贊助商名稱</th>
+                            <th class="text-end pe-4" style="width: 150px;">操作項目</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="3" class="text-center text-muted py-4">
+                                    目前尚未建立任何贊助者資料。
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <!-- 顯示自動遞增的連續號碼 -->
+                                    <td class="ps-4 fw-bold text-secondary">@(index++)</td>
+                                    <td class="fw-bold text-dark">
+                                        @item.SponsorName
+                                    </td>
+                                    <td class="text-end pe-4">
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a asp-action="Edit" asp-route-id="@item.SponsorId" class="btn btn-outline-primary">編輯</a>
+                                            <a asp-action="Delete" asp-route-id="@item.SponsorId" class="btn btn-outline-danger">刪除</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>

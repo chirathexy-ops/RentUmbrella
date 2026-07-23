@@ -1,31 +1,50 @@
 ﻿@model UmbrellaRentalSystem.Models.Location
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "編輯雨傘地點";
 }
 
-<h1>Edit</h1>
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0 rounded-3">
+                <!-- 藍色標題區塊 -->
+                <div class="card-header bg-primary text-white p-3 rounded-top">
+                    <h4 class="mb-0 fw-bold">編輯雨傘地點資訊</h4>
+                </div>
 
-<h4>Location</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="LocationId" />
-            <div class="form-group">
-                <label asp-for="LocationName" class="control-label"></label>
-                <input asp-for="LocationName" class="form-control" />
-                <span asp-validation-for="LocationName" class="text-danger"></span>
+                <div class="card-body p-4">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- 隱藏主鍵 ID -->
+                        <input type="hidden" asp-for="LocationId" />
+
+                        <!-- 站點名稱輸入框 -->
+                        <div class="mb-4">
+                            <label asp-for="LocationName" class="form-label text-muted small mb-1">站點名稱</label>
+                            <input asp-for="LocationName" class="form-control form-control-lg fs-6 bg-light border-0" placeholder="請輸入站點名稱" />
+                            <span asp-validation-for="LocationName" class="text-danger small"></span>
+                        </div>
+
+                        <!-- 按鈕區：右下角雙按鈕 -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-3">
+                                返回列表
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4 fw-bold rounded-3">
+                                儲存變更
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

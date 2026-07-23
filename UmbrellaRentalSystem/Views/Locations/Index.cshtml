@@ -1,35 +1,87 @@
 ﻿@model IEnumerable<UmbrellaRentalSystem.Models.Location>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "雨傘地點管理";
+
+    // 判斷是否為管理者（比對 Session 中的 Role 是否為 Manager）
+    bool isManager = ViewBag.IsManager == true || Context.Session.GetString("Role")?.ToLower() == "manager";
+
+    // 初始化流水號計數器
+    int index = 1;
 }
 
-<h1>Index</h1>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1"><i class="bi bi-geo-alt me-2 text-primary"></i>雨傘地點管理</h2>
+        </div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.LocationName)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.LocationName)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.LocationId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.LocationId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.LocationId">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+        @if (isManager)
+        {
+            <a asp-action="Create" class="btn btn-primary px-3 rounded-pill shadow-sm fw-bold">
+                <i class="bi bi-plus-lg me-1"></i>新增雨傘地點
+            </a>
+        }
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert">
+            <strong>@TempData["SuccessMessage"]</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <!-- 顯示從 1 開始的編號 -->
+                            <th class="ps-4" style="width: 100px;">編號</th>
+                            <th>站點名稱</th>
+                            @if (isManager)
+                            {
+                                <th class="text-end pe-4" style="width: 150px;">操作項目</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="@(isManager ? 3 : 2)" class="text-center text-muted py-4">
+                                    目前尚未建立任何地點資料。
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            foreach (var item in Model)
+                            {
+                                <tr>
+                                    <!-- 顯示自動遞增的連續號碼 -->
+                                    <td class="ps-4 fw-bold text-secondary">@(index++)</td>
+                                    <td class="fw-bold text-dark">
+                                        <i class="bi bi-pin-map text-primary me-2"></i>@item.LocationName
+                                    </td>
+                                    @if (isManager)
+                                    {
+                                        <td class="text-end pe-4">
+                                            <!-- 操作按鈕群組：編輯與刪除 -->
+                                            <div class="btn-group btn-group-sm" role="group">
+                                                <a asp-action="Edit" asp-route-id="@item.LocationId" class="btn btn-outline-primary">編輯</a>
+                                                <a asp-action="Delete" asp-route-id="@item.LocationId" class="btn btn-outline-danger">刪除</a>
+                                            </div>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

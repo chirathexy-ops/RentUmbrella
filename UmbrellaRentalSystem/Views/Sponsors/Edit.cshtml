@@ -1,36 +1,46 @@
 ﻿@model UmbrellaRentalSystem.Models.Sponsor
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "編輯贊助商";
 }
 
-<h1>Edit</h1>
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card shadow-sm border-0 rounded-3">
+                <!-- 藍色標題區塊 -->
+                <div class="card-header bg-primary text-white p-3 rounded-top">
+                    <h4 class="mb-0 fw-bold">編輯贊助商資訊</h4>
+                </div>
 
-<h4>Sponsor</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="card-body p-4">
+                    <form asp-action="Edit">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-            @* 修正：這裡的 Id 要改為 SponsorId *@
-            <input type="hidden" asp-for="SponsorId" />
+                        <!-- 隱藏主鍵 ID -->
+                        <input type="hidden" asp-for="SponsorId" />
 
-            <div class="form-group mb-3">
-                <label asp-for="SponsorName" class="control-label"></label>
-                <input asp-for="SponsorName" class="form-control" />
-                <span asp-validation-for="SponsorName" class="text-danger"></span>
+                        <!-- 贊助商名稱輸入框 -->
+                        <div class="mb-4">
+                            <label asp-for="SponsorName" class="form-label text-muted small mb-1">贊助商名稱</label>
+                            <input asp-for="SponsorName" class="form-control form-control-lg fs-6 bg-light border-0" placeholder="請輸入贊助商名稱" />
+                            <span asp-validation-for="SponsorName" class="text-danger small"></span>
+                        </div>
+
+                        <!-- 按鈕區：右下角雙按鈕 -->
+                        <div class="d-flex justify-content-end gap-2 mt-4">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4 rounded-3">
+                                返回列表
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4 fw-bold rounded-3">
+                                儲存變更
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

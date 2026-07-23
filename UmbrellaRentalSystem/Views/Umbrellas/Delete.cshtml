@@ -4,28 +4,76 @@
     ViewData["Title"] = "刪除雨傘";
 }
 
-<h1>刪除雨傘</h1>
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <!-- 刪除警告卡片 -->
+            <div class="card shadow-sm border-0 rounded-3">
+                <!-- 紅色警告標頭 -->
+                <div class="card-header bg-danger text-white p-3 rounded-top">
+                    <h4 class="mb-0 fw-bold">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>確定要刪除這把雨傘嗎？
+                    </h4>
+                </div>
 
-<h3>確定要刪除這把雨傘嗎？</h3>
-<div>
-    <h4>Umbrella</h4>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">資料庫編號</dt>
-        <dd class="col-sm-10">@Model.UmbrellaId</dd>
-        <dt class="col-sm-2">雨傘編號</dt>
-        <dd class="col-sm-10">@Model.UmbrellaCode</dd>
-        <dt class="col-sm-2">狀態</dt>
-        <dd class="col-sm-10">@Model.Status</dd>
-        <dt class="col-sm-2">地點編號</dt>
-        <dd class="col-sm-10">@Model.LocationId</dd>
-        <dt class="col-sm-2">贊助商編號</dt>
-        <dd class="col-sm-10">@Model.SponsorId</dd>
-    </dl>
+                <div class="card-body p-4">
+                    <p class="text-muted small mb-3">刪除後資料將無法復原，請確認以下雨傘資訊：</p>
 
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="UmbrellaId" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+                    <!-- 資訊顯示列表 -->
+                    <div class="list-group list-group-flush mb-4 border rounded">
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-2">
+                            <span class="text-muted">資料庫編號</span>
+                            <span class="fw-bold">@Model.UmbrellaId</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-2">
+                            <span class="text-muted">雨傘編號</span>
+                            <span class="fw-bold text-dark"># @Model.UmbrellaCode</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-2">
+                            <span class="text-muted">雨傘狀態</span>
+                            <div>
+                                @if (Model.Status == "Available" || Model.Status == "在庫")
+                                {
+                                    <span class="badge bg-success bg-opacity-10 text-success px-2 py-1 rounded-2">Available (可借出)</span>
+                                }
+                                else if (Model.Status == "Rented")
+                                {
+                                    <span class="badge bg-primary bg-opacity-10 text-primary px-2 py-1 rounded-2">Rented (借出中)</span>
+                                }
+                                else if (Model.Status == "Lost")
+                                {
+                                    <span class="badge bg-danger bg-opacity-10 text-danger px-2 py-1 rounded-2">Lost (遺失)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-secondary px-2 py-1">@Model.Status</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-2">
+                            <span class="text-muted">目前地點</span>
+                            <span class="fw-bold text-info">@(Model.Location?.LocationName ?? "未指定")</span>
+                        </div>
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-2">
+                            <span class="text-muted">贊助單位</span>
+                            <span class="fw-bold text-secondary">@(Model.Sponsor?.SponsorName ?? "無")</span>
+                        </div>
+                    </div>
+
+                    <!-- 刪除表單與按鈕 -->
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="UmbrellaId" />
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <a asp-action="Index" class="btn btn-outline-secondary px-4 me-md-2">
+                                <i class="bi bi-arrow-left me-1"></i>返回列表
+                            </a>
+                            <button type="submit" class="btn btn-danger px-4 fw-bold">
+                                <i class="bi bi-trash me-1"></i>確認刪除
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

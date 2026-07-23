@@ -4,43 +4,75 @@
     ViewData["Title"] = "新增雨傘";
 }
 
-<h1>新增雨傘</h1>
+<div class="container mt-4">
+    <!-- 縮小並居中表單，讓它看起來像一個精緻的卡片 -->
+    <div class="row justify-content-center">
+        <div class="col-md-6">
 
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="UmbrellaCode" class="control-label"></label>
-                <input asp-for="UmbrellaCode" class="form-control" placeholder="例如 U001" />
-                <span asp-validation-for="UmbrellaCode" class="text-danger"></span>
+            <div class="card shadow-sm border-0">
+                <!-- 卡片頂部有色標題區（採用與右邊歸還雨傘類似的深色調，也可以改為 primary 藍色） -->
+                <div class="card-header bg-dark text-white text-center py-3 rounded-top">
+                    <h4 class="mb-0 fw-bold" style="letter-spacing: 2px;">
+                        新增雨傘資料
+                    </h4>
+                </div>
+
+                <!-- 卡片內容主體 -->
+                <div class="card-body p-4">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                        <!-- 1. 雨傘編號 -->
+                        <div class="form-group mb-3">
+                            <label asp-for="UmbrellaCode" class="form-label fw-bold">1. 雨傘編號</label>
+                            <input asp-for="UmbrellaCode" class="form-control form-control-lg fs-6" placeholder="例如 U001" />
+                            <span asp-validation-for="UmbrellaCode" class="text-danger small"></span>
+                        </div>
+
+                        <!-- 2. 雨傘狀態 -->
+                        <div class="form-group mb-3">
+                            <label asp-for="Status" class="form-label fw-bold">2. 初始狀態</label>
+                            <input asp-for="Status" class="form-control form-control-lg fs-6" />
+                            <span asp-validation-for="Status" class="text-danger small"></span>
+                        </div>
+
+                        <!-- 3. 地點選擇 -->
+                        <div class="form-group mb-3">
+                            <label asp-for="LocationId" class="form-label fw-bold">3. 選擇放置地點</label>
+                            <select asp-for="LocationId" class="form-select form-select-lg fs-6" asp-items="ViewBag.LocationId">
+                                <option value="">-- 請選擇站點 --</option>
+                            </select>
+                            <span asp-validation-for="LocationId" class="text-danger small"></span>
+                        </div>
+
+                        <!-- 4. 贊助商選擇 -->
+                        <div class="form-group mb-4">
+                            <label asp-for="SponsorId" class="form-label fw-bold">4. 選擇隸屬贊助商</label>
+                            <select asp-for="SponsorId" class="form-select form-select-lg fs-6" asp-items="ViewBag.SponsorId">
+                                <option value="">-- 請選擇贊助商 --</option>
+                            </select>
+                            <span asp-validation-for="SponsorId" class="text-danger small"></span>
+                        </div>
+
+                        <!-- 按鈕區 -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg fw-bold py-2 fs-6 shadow-sm">
+                                確認新增雨傘
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary py-2 btn-sm mt-1">
+                                返回雨傘清單
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="LocationId" class="control-label"></label>
-                <input asp-for="LocationId" class="form-control" />
-                <span asp-validation-for="LocationId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SponsorId" class="control-label"></label>
-                <input asp-for="SponsorId" class="form-control" />
-                <span asp-validation-for="SponsorId" class="text-danger"></span>
-            </div>
-            <div class="form-group mt-3">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

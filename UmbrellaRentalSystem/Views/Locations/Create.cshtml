@@ -1,30 +1,48 @@
 ﻿@model UmbrellaRentalSystem.Models.Location
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "新增雨傘地點";
 }
 
-<h1>Create</h1>
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <!-- 仿新增雨傘資料風格卡片 -->
+            <div class="card shadow-sm border-0 rounded-3">
+                <!-- 深色標題欄 -->
+                <div class="card-header bg-dark text-white text-center py-3 rounded-top">
+                    <h4 class="mb-0 fw-bold">新增雨傘地點資料</h4>
+                </div>
 
-<h4>Location</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="LocationName" class="control-label"></label>
-                <input asp-for="LocationName" class="form-control" />
-                <span asp-validation-for="LocationName" class="text-danger"></span>
+                <div class="card-body p-4">
+                    <form asp-action="Create">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <!-- 1. 站點名稱 -->
+                        <div class="mb-4">
+                            <label asp-for="LocationName" class="form-label fw-bold text-dark">1. 站點名稱</label>
+                            <input asp-for="LocationName" class="form-control form-control-lg fs-6" placeholder="例如 元智圖書館 / 校門口" />
+                            <span asp-validation-for="LocationName" class="text-danger small"></span>
+                        </div>
+
+                        <!-- 按鈕區：上下疊放滿寬按鈕 -->
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg fs-6 fw-bold py-2">
+                                確認新增雨傘地點
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary btn-lg fs-6 py-2">
+                                返回地點清單
+                            </a>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -64,7 +64,7 @@ namespace UmbrellaRentalSystem
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Umbrellas}/{action=Index}/{id?}");
+                pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.MapRazorPages();
 

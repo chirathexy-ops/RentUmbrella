@@ -7,7 +7,8 @@
     bool isUserLoggedIn = ViewBag.IsUserLoggedIn == true;
 }
 
-<h1 class="mb-4">雨傘借還管理系統</h1>
+
+<h2 class="fw-bold mb-1">雨傘借還管理系統</h2>
 
 <div class="d-flex justify-content-between mb-3">
     <div>
@@ -65,7 +66,6 @@
                 <table class="table table-hover mb-0">
                     <thead class="thead-light">
                         <tr>
-                            <th>資料庫編號</th>
                             <th>雨傘編號</th>
                             <th>目前狀態</th>
                             <th>所在站點位置</th>
@@ -80,7 +80,7 @@
                         @if (!Model.Any())
                         {
                             <tr>
-                                <td colspan="@(isManager || isUserLoggedIn ? 6 : 5)" class="text-center text-muted py-4">
+                                <td colspan="@(isManager || isUserLoggedIn ? 5 : 4)" class="text-center text-muted py-4">
                                     該站點目前沒有任何雨傘資料。
                                 </td>
                             </tr>
@@ -90,7 +90,6 @@
                             foreach (var item in Model)
                             {
                                 <tr>
-                                    <td>@item.UmbrellaId</td>
                                     <td class="font-weight-bold text-secondary"># @item.UmbrellaCode</td>
                                     <td>
                                         @if (item.Status == "Available" || item.Status == "在庫")
@@ -119,7 +118,6 @@
                                             @if (isManager)
                                             {
                                                 <a asp-action="Edit" asp-route-id="@item.UmbrellaId" class="btn btn-sm btn-outline-primary">編輯</a> <span>|</span>
-                                                <a asp-action="Details" asp-route-id="@item.UmbrellaId" class="btn btn-sm btn-outline-info">詳情</a> <span>|</span>
                                                 <a asp-action="Delete" asp-route-id="@item.UmbrellaId" class="btn btn-sm btn-outline-danger">刪除</a>
                                             }
                                             else if (isUserLoggedIn)
