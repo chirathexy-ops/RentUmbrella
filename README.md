@@ -18,43 +18,43 @@ This project simulates a real-world umbrella sharing service, allowing users to 
 
 ## Login
 
-> *(Insert screenshot here)*
-
+> ![Login](UmbrellaRentalSystem/assets/screenshots/userLogin.png)
+> ![Login](UmbrellaRentalSystem/assets/screenshots/managerLogin.png)
 ---
 
 ## Borrow Umbrella
 
-> *(Insert screenshot here)*
+> ![Borrow Umbrella](UmbrellaRentalSystem/assets/screenshots/borrow.png)
 
 ---
 
 ## Return Umbrella
 
-> *(Insert screenshot here)*
+> ![Return Umbrella](UmbrellaRentalSystem/assets/screenshots/return.png)
 
 ---
 
 ## Umbrella Management
 
-> *(Insert screenshot here)*
+> ![Umbrella Management](UmbrellaRentalSystem/assets/screenshots/umbrellaManage.png)
 
 ---
 
 ## Location Management
 
-> *(Insert screenshot here)*
+> ![Location Management](UmbrellaRentalSystem/assets/screenshots/locationManage.png)
 
 ---
 
 ## Sponsor Management
 
-> *(Insert screenshot here)*
+> ![Sponsor Management](UmbrellaRentalSystem/assets/screenshots/sponsorManage.png)
 
 ---
 
 ## Account Management
 
-> *(Insert screenshot here)*
+> ![Account Management](UmbrellaRentalSystem/assets/screenshots/accountManage.png)
 
 ---
 
