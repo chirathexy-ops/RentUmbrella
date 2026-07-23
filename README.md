@@ -184,10 +184,4 @@ UmbrellaRentalSystem
 - RESTful API
 - Unit Testing
 
----
 
-# 👨‍💻 Author
-
-Developed by **Rain**
-
-If you have any suggestions, feel free to open an Issue.
