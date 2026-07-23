@@ -12,7 +12,7 @@ This project simulates a real-world umbrella sharing service, allowing users to 
 
 ## Home
 
-> (assets/screenshots/home.png)
+> ![Home](assets/screenshots/home.png)
 
 ---
 
